@@ -1,8 +1,7 @@
 # userslist
 
-### users localStorage
+## users localStorage
 по дефолту при загрузке, подгружает два пользователя из json
-```
 
 ## Project setup
 ```
