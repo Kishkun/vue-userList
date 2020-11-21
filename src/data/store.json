@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Kishkun Alex",
+      "number": "80291111111",
+      "email": "alex@gmail.com",
+      "address": {
+        "country": "Belarus",
+        "city": "Minsk",
+        "street": "Belusha",
+        "apartment": "32"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Kishkun Pavel",
+      "number": "802922222222",
+      "email": "pavel@gmail.com",
+      "address": {
+        "country": "Belarus",
+        "city": "Grodno",
+        "street": "Kirova",
+        "apartment": "105"
+      }
+    }
+  ]
+}
