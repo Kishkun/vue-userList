@@ -22,8 +22,5 @@
         type: Array
       }
     },
-    mounted() {
-      console.log(this.users)
-    }
   }
 </script>
