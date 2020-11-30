@@ -157,11 +157,8 @@
             this.$refs.street.value &&
             this.$refs.apartment.value
         ) {
+          this.formData = {...this.formData};
           if (this.isAdd) {
-            this.formData = {
-              ...this.formData,
-              id: this.randomInteger(10, 10000)
-            };
             this.handlerAdd(this.formData)
           } else {
             this.handlerEdit(this.formData);
@@ -226,9 +223,6 @@
           }
         }
       },
-      randomInteger(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
     },
     watch: {
       currentUser: {

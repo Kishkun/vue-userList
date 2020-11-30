@@ -1,10 +1,12 @@
-import UIkit  from 'uikit'
-import { loadData } from '../../api';
+import { loadData } from '../../api'
+import firebase from 'firebase/app'
 
-import { showError, showSuccess } from '../../helpers/notification';
+import { showError, showSuccess } from '../../helpers/notification'
+import { transformToArray } from '../../helpers/transformToArray'
 
 const state = () => ({
   users: [],
+  userEmail: null,
   currentUser: null,
   loading: false,
   editLoading: false,
@@ -18,25 +20,22 @@ const mutations = {
   SET_USERS(state, users) {
     state.users = users
   },
-  SET_CURRENT_USER(state, {user, isAdd}) {
-    state.currentUser = user
-    state.isAdd = isAdd
+  SET_ADD_USER(state, user) {
+    state.users.push(user)
   },
   SET_DELETE_USER(state, id) {
     state.users = state.users.filter(user => user.id !== id)
-    localStorage.setItem('userList', JSON.stringify(state.users))
-    if (JSON.parse(localStorage.getItem('userList')).length === 0) {
-      localStorage.removeItem('userList')
-    }
   },
   SET_EDIT_USER(state, user) {
     let indexUser = state.users.findIndex(item => item.id === user.id)
     state.users[indexUser] = user;
-    localStorage.setItem('userList', JSON.stringify(state.users))
   },
-  SET_ADD_USER(state, user) {
-    state.users.push(user)
-    localStorage.setItem('userList', JSON.stringify(state.users))
+  SET_CURRENT_USER(state, {user, isAdd}) {
+    state.currentUser = user
+    state.isAdd = isAdd
+  },
+  SET_USEREMAIL(state, email) {
+    state.userEmail = email
   },
   SET_EDIT_LOADING(state, editLoading) {
     state.editLoading = editLoading
@@ -44,65 +43,69 @@ const mutations = {
 };
 
 const actions = {
-  async GET_USERS({commit}) {
+  async GET_USERS({commit, dispatch}) {
     commit('SET_LOADING', true);
     try {
-      let localUsers = JSON.parse(localStorage.getItem('userList'))
-      if (localUsers) {
-        commit('SET_USERS', localUsers);
-      } else {
-        let { users } = await loadData(1000);
-        commit('SET_USERS', users);
-        localStorage.setItem('userList', JSON.stringify(users))
-      }
+      const uid = await dispatch('auth/getUiId', null, { root: true });
+      const list = await firebase.database().ref(`/users/${uid}/list`).once('value');
+      const listValues = list.val();
+      const value = transformToArray(listValues);
+      const email = await firebase.database().ref(`/users/${uid}/info`).once('value');
+      const emailValue = email.val().email;
+      commit('SET_USERS', value);
+      commit('SET_USEREMAIL', emailValue);
     } catch (e) {
-      console.log(e)
+      showError(e.code)
     }
     commit('SET_LOADING', false);
   },
-  GET_CURRENT_USER({commit}, {user, isAdd}) {
-    commit('SET_CURRENT_USER', {user, isAdd});
+  async ADD_USER({commit, dispatch}, user) {
+    try {
+      const uid = await dispatch('auth/getUiId', null, { root: true });
+      const newUser =  await firebase.database().ref(`/users/${uid}/list`).push({
+        ...user
+      })
+      commit('SET_ADD_USER', {...user, id: newUser.key});
+      showSuccess('User added')
+      return { ...user, id: newUser.key}
+    } catch (e) {
+      showError(e.code)
+    }
   },
-  EDIT_USER({commit}, user) {
+  async EDIT_USER({commit, dispatch}, user) {
     commit('SET_EDIT_LOADING', true);
     try {
+      const uid = await dispatch('auth/getUiId', null, { root: true });
+      await firebase.database().ref(`/users/${uid}/list`).child(user.id).update({...user});
       commit('SET_EDIT_USER', user);
       showSuccess('User updated')
     } catch (e) {
-      showSuccess('Something went wrong')
+      showError(e.code)
     }
     commit('SET_EDIT_LOADING', false);
   },
-  DELETE_USER({commit}, id) {
-    commit('SET_LOADING', true);
+  GET_CURRENT_USER({commit}, {user, isAdd}) {
     try {
+      commit('SET_CURRENT_USER', {user, isAdd});
+    } catch (e) {
+      console.log(e)
+    }
+  },
+  async DELETE_USER({commit, dispatch}, id) {
+    try {
+      const uid = await dispatch('auth/getUiId', null, { root: true });
+      await firebase.database().ref(`/users/${uid}/list`).child(id).remove();
       commit('SET_DELETE_USER', id);
       showSuccess('User deleted')
     } catch (e) {
-      showSuccess('Something went wrong')
+      showError(e.code)
     }
-    commit('SET_LOADING', false);
   },
-  ADD_USER({commit}, user) {
-    commit('SET_LOADING', true);
-    try {
-      commit('SET_ADD_USER', user);
-      showSuccess('User added')
-    } catch (e) {
-      showSuccess('Something went wrong')
-    }
-    commit('SET_LOADING', false);
-  },
-};
-
-const getters = {
-
 };
 
 export default {
   namespaced: true,
   state,
-  getters,
   actions,
   mutations
 }

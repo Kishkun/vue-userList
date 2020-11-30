@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <transition name="slide-fade">
         <div class="uk-flex uk-flex-middle uk-flex-between uk-card uk-card-default uk-card-body uk-padding-small uk-margin-medium-bottom">
             <div class="uk-column-1">
                 <span class="uk-text-large">{{ user.name }}</span>
@@ -9,7 +9,7 @@
                 <EditButton @handler="openModal(user)" />
             </div>
         </div>
-    </div>
+    </transition>
 </template>
 <script>
   import DeleteButton from '../Button/DeleteButton';
@@ -46,5 +46,18 @@
     }
   }
 </script>
-<style scoped lang="scss">
+<style scoped>
+    /* Enter and leave animations can use different */
+    /* durations and timing functions.              */
+    .slide-fade-enter-active {
+        transition: all .2s ease;
+    }
+    .slide-fade-leave-active {
+        transition: all .2s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+    .slide-fade-enter, .slide-fade-leave-to
+        /* .slide-fade-leave-active below version 2.1.8 */ {
+        transform: translateX(10px);
+        opacity: 0;
+    }
 </style>

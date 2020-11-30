@@ -21,8 +21,9 @@
       users: {
         type: Array
       }
+    },
+    mounted() {
+      console.log(this.users)
     }
   }
 </script>
-<style scoped>
-</style>
