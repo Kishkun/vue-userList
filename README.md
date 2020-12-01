@@ -1,7 +1,7 @@
 # userslist
 
-## users localStorage
-по дефолту при загрузке, подгружает два пользователя из json
+## Hosting URL: 
+https://userlist-d803a.web.app
 
 ## Project setup
 ```

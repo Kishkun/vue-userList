@@ -15,11 +15,11 @@
               :class="{'uk-form-success' : formData.name}"
           />
         </div>
-        <label class="uk-form-label" for="email">Email</label>
+        <label class="uk-form-label" for="email-register">Email</label>
         <div class="uk-form-controls uk-margin-small-bottom">
           <input
               class="uk-input"
-              id="email"
+              id="email-register"
               name="email"
               ref="email"
               type="text"

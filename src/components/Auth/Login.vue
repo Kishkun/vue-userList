@@ -3,11 +3,11 @@
     <div class="uk-child-width-1-2 uk-flex uk-flex-column uk-flex-middle">
       <h2 class="uk-text-center">Login form</h2>
       <form ref="loginForm" @submit.prevent="handleSubmit" class="uk-form uk-margin-small-top">
-        <label class="uk-form-label" for="email">Email</label>
+        <label class="uk-form-label" for="email-login">Email</label>
         <div class="uk-form-controls uk-margin-small-bottom">
           <input
               class="uk-input"
-              id="email"
+              id="email-login"
               name="email"
               ref="email"
               type="text"
